@@ -19,7 +19,7 @@
                 radial-gradient(ellipse at 80% 20%, rgba(70, 35, 5, 0.2) 0%, transparent 50%);
             color: #d4c9a8;
             padding: 20px;
-            max-width: 1100px;
+            max-width: 800px;
             margin: 0 auto;
             display: flex;
             flex-direction: column;
@@ -74,13 +74,7 @@
 
         .section-body { padding: 10px 14px; }
 
-        /* --- Две колонки ресурсов --- */
-        .resources-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0 24px;
-        }
-
+        /* --- Таблица ресурсов --- */
         table.resources {
             width: 100%;
             border-collapse: collapse;
@@ -91,7 +85,7 @@
             color: #6a5e42;
             text-transform: uppercase;
             letter-spacing: 1px;
-            padding: 0 6px 4px;
+            padding: 0 8px 4px;
             font-weight: normal;
         }
 
@@ -101,7 +95,7 @@
         table.resources th:nth-child(4) { text-align: right; }
 
         table.resources td {
-            padding: 5px 6px;
+            padding: 4px 8px;
             border-bottom: 1px solid rgba(58, 52, 37, 0.6);
         }
 
@@ -111,6 +105,19 @@
             font-size: 0.85em;
             color: #d4c9a8;
             white-space: nowrap;
+        }
+
+        .res-name {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .res-name img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+            image-rendering: pixelated;
         }
 
         table.resources td:nth-child(2) { text-align: right; }
@@ -125,7 +132,7 @@
         table.resources td:nth-child(4).active { color: #e8c35a; }
 
         table.resources input {
-            width: 72px;
+            width: 80px;
             padding: 4px 6px;
             border: 1px solid #3a3425;
             background: rgba(20, 18, 12, 0.8);
@@ -136,7 +143,7 @@
         }
 
         table.resources input.qty-input {
-            width: 64px;
+            width: 70px;
             color: #d4c9a8;
         }
 
@@ -221,20 +228,17 @@
     <div class="section">
         <h2>Ресурсы</h2>
         <div class="section-body">
-            <div class="resources-columns">
-                <table class="resources" id="prices-left">
-                    <thead>
-                        <tr><th>Ресурс</th><th>Цена</th><th>Кол-во</th><th>Сумма</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-                <table class="resources" id="prices-right">
-                    <thead>
-                        <tr><th>Ресурс</th><th>Цена</th><th>Кол-во</th><th>Сумма</th></tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+            <table class="resources" id="prices">
+                <thead>
+                    <tr>
+                        <th>Ресурс</th>
+                        <th>Цена</th>
+                        <th>Кол-во</th>
+                        <th>Сумма</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
         </div>
     </div>
 
@@ -252,36 +256,29 @@
 
     <script>
         const RESOURCES = [
-            'Metals',
-            'Precious metals',
-            'Polymers',
-            'Organic',
-            'Silicon',
-            'Radioactive materials',
-            'Gems',
-            'Venom'
+            { name: 'Metals',                icon: 'img/metals.png' },
+            { name: 'Precious metals',       icon: 'img/precious_metals.png' },
+            { name: 'Polymers',              icon: 'img/polymers.png' },
+            { name: 'Organic',               icon: 'img/organic.png' },
+            { name: 'Silicon',               icon: 'img/silicon.png' },
+            { name: 'Radioactive materials', icon: 'img/radioactive.png' },
+            { name: 'Gems',                  icon: 'img/gems.png' },
+            { name: 'Venom',                 icon: 'img/venom.png' }
         ];
 
-        const half = Math.ceil(RESOURCES.length / 2);
-        const tbodyLeft = document.querySelector('#prices-left tbody');
-        const tbodyRight = document.querySelector('#prices-right tbody');
+        const tbody = document.querySelector('#prices tbody');
         const logsTextarea = document.getElementById('logs');
         const grandTotalEl = document.getElementById('grand-total');
 
-        function buildRow(name) {
-            const saved = localStorage.getItem('price_' + name) || '';
+        RESOURCES.forEach(res => {
+            const saved = localStorage.getItem('price_' + res.name) || '';
             const tr = document.createElement('tr');
             tr.innerHTML =
-                '<td>' + name + '</td>' +
-                '<td><input type="number" min="0" step="0.1" data-resource="' + name + '" value="' + saved + '" placeholder="0"></td>' +
-                '<td><input type="number" min="0" step="1" class="qty-input" data-qty="' + name + '" placeholder="0"></td>' +
-                '<td data-sum="' + name + '">&mdash;</td>';
-            return tr;
-        }
-
-        RESOURCES.forEach((name, i) => {
-            const target = i < half ? tbodyLeft : tbodyRight;
-            target.appendChild(buildRow(name));
+                '<td><div class="res-name"><img src="' + res.icon + '" alt="' + res.name + '">' + res.name + '</div></td>' +
+                '<td><input type="number" min="0" step="0.1" data-resource="' + res.name + '" value="' + saved + '" placeholder="0"></td>' +
+                '<td><input type="number" min="0" step="1" class="qty-input" data-qty="' + res.name + '" placeholder="0"></td>' +
+                '<td data-sum="' + res.name + '">&mdash;</td>';
+            tbody.appendChild(tr);
         });
 
         document.addEventListener('input', e => {
@@ -302,7 +299,7 @@
         }
 
         const RESOURCE_MAP = {};
-        RESOURCES.forEach(name => { RESOURCE_MAP[name.toLowerCase()] = name; });
+        RESOURCES.forEach(res => { RESOURCE_MAP[res.name.toLowerCase()] = res.name; });
 
         function parseLogs(text) {
             const totals = {};
@@ -321,9 +318,9 @@
             const text = logsTextarea.value.trim();
             const totals = text ? parseLogs(text) : {};
 
-            RESOURCES.forEach(name => {
-                const qtyInput = document.querySelector('[data-qty="' + name + '"]');
-                qtyInput.value = totals[name] || '';
+            RESOURCES.forEach(res => {
+                const qtyInput = document.querySelector('[data-qty="' + res.name + '"]');
+                qtyInput.value = totals[res.name] || '';
             });
 
             calculate();
@@ -333,11 +330,11 @@
             const prices = getPrices();
             let grandTotal = 0;
 
-            RESOURCES.forEach(name => {
-                const qtyInput = document.querySelector('[data-qty="' + name + '"]');
-                const sumEl = document.querySelector('[data-sum="' + name + '"]');
+            RESOURCES.forEach(res => {
+                const qtyInput = document.querySelector('[data-qty="' + res.name + '"]');
+                const sumEl = document.querySelector('[data-sum="' + res.name + '"]');
                 const qty = parseInt(qtyInput.value) || 0;
-                const price = prices[name] || 0;
+                const price = prices[res.name] || 0;
                 const sum = qty * price;
                 grandTotal += sum;
 
