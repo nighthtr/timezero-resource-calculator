@@ -242,6 +242,144 @@
 
         textarea::placeholder { color: #4a4230; }
 
+        /* --- Вкладки --- */
+        .tab-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 0;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            background: rgba(28, 26, 21, 0.9);
+            border: 1px solid #3a3425;
+            border-bottom: none;
+            color: #6a5e42;
+            font-family: inherit;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .tab-btn + .tab-btn { border-left: none; }
+
+        .tab-btn:hover { color: #d4c9a8; }
+
+        .tab-btn.active {
+            color: #e8c35a;
+            background: rgba(80, 60, 20, 0.35);
+            border-bottom: 2px solid #e8c35a;
+            text-shadow: 0 0 12px rgba(232, 195, 90, 0.2);
+        }
+
+        .tab-content { display: none; flex-direction: column; flex: 1; min-height: 0; }
+        .tab-content.active { display: flex; }
+
+        /* --- Варпоинты --- */
+        #tab-warpoints { overflow: hidden; }
+
+        #tab-warpoints > .section {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #tab-warpoints > .section:nth-child(1),
+        #tab-warpoints > .section:nth-child(2) {
+            height: 40%;
+        }
+
+        #tab-warpoints > .section:nth-child(3) {
+            height: 20%;
+        }
+
+        #tab-warpoints > .section > .section-body {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        table.warpoints {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table.warpoints th {
+            font-size: 0.6em;
+            color: #6a5e42;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 8px 4px;
+            font-weight: normal;
+            text-align: right;
+        }
+
+        table.warpoints th:first-child { text-align: left; }
+
+        table.warpoints td {
+            padding: 4px 8px;
+            border-bottom: 1px solid rgba(58, 52, 37, 0.6);
+            font-size: 0.85em;
+            text-align: right;
+        }
+
+        table.warpoints tr:last-child td { border-bottom: none; }
+        table.warpoints td:first-child { text-align: left; color: #d4c9a8; }
+
+        #wp-players td:first-child {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #wp-players td:first-child:hover { color: #e8c35a; }
+
+        table.warpoints thead th {
+            position: sticky;
+            top: 0;
+            background: rgba(35, 30, 20, 0.95);
+            z-index: 1;
+        }
+
+        .place-badge {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            line-height: 18px;
+            text-align: center;
+            border-radius: 50%;
+            font-size: 0.7em;
+            font-weight: bold;
+            margin-right: 6px;
+            flex-shrink: 0;
+        }
+
+        .place-1 .place-badge { background: #e8c35a; color: #1c1a15; }
+        .place-2 .place-badge { background: #a8a8a8; color: #1c1a15; }
+        .place-3 .place-badge { background: #cd7f32; color: #1c1a15; }
+
+        .place-1 td:first-child { color: #e8c35a; }
+        .place-2 td:first-child { color: #a8a8a8; }
+        .place-3 td:first-child { color: #cd7f32; }
+
+        .nick-cell {
+            display: flex;
+            align-items: center;
+        }
+
+        .positive { color: #a0d468; }
+        .negative { color: #e86a5a; }
+
+        .grand-total td {
+            border-top: 2px solid #e8c35a;
+            border-bottom: none !important;
+            color: #e8c35a !important;
+            font-weight: bold;
+        }
+
         /* scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #1c1a15; }
@@ -249,38 +387,88 @@
     </style>
 </head>
 <body>
-    <h1>Resource Calculator</h1>
+    <h1>TimeZero Calculators</h1>
     <div class="subtitle">Developed by The Alliance</div>
 
-    <div class="section">
-        <h2>Ресурсы</h2>
-        <div class="section-body">
-            <table class="resources" id="prices">
-                <thead>
-                    <tr>
-                        <th>Ресурс</th>
-                        <th>Цена</th>
-                        <th>Кол-во</th>
-                        <th>Сумма</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+    <div class="tab-nav">
+        <button class="tab-btn active" data-tab="tab-resources">Ресурсы</button>
+        <button class="tab-btn" data-tab="tab-warpoints">Варпоинты</button>
+    </div>
+
+    <div class="tab-content active" id="tab-resources">
+        <div class="section">
+            <h2>Ресурсы</h2>
+            <div class="section-body">
+                <table class="resources" id="prices">
+                    <thead>
+                        <tr>
+                            <th>Ресурс</th>
+                            <th>Цена</th>
+                            <th>Кол-во</th>
+                            <th>Сумма</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="total-block">
+            <span class="total-label">Итого</span>
+            <div class="total-right">
+                <span class="copied-tip" id="copied-tip">скопировано</span>
+                <span class="total-value empty" id="grand-total">0</span>
+            </div>
+        </div>
+
+        <div class="section logs">
+            <h2>Логи</h2>
+            <div class="section-body">
+                <textarea id="logs" placeholder="Вставьте логи...&#10;&#10;11.02.26 22:10 Получено: Metals [120] от 'The Alliance'&#10;11.02.26 22:10 Получено: Polymers [80] от 'The Alliance'"></textarea>
+            </div>
         </div>
     </div>
 
-    <div class="total-block">
-        <span class="total-label">Итого</span>
-        <div class="total-right">
-            <span class="copied-tip" id="copied-tip">скопировано</span>
-            <span class="total-value empty" id="grand-total">0</span>
+    <div class="tab-content" id="tab-warpoints">
+        <div class="section">
+            <h2>Игроки</h2>
+            <div class="section-body">
+                <table class="warpoints" id="wp-players">
+                    <thead>
+                        <tr>
+                            <th>Ник</th>
+                            <th>Получено</th>
+                            <th>Отдано</th>
+                            <th>Разница</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
-    </div>
 
-    <div class="section logs">
-        <h2>Логи</h2>
-        <div class="section-body">
-            <textarea id="logs" placeholder="Вставьте логи...&#10;&#10;11.02.26 22:10 Получено: Metals [120] от 'The Alliance'&#10;11.02.26 22:10 Получено: Polymers [80] от 'The Alliance'"></textarea>
+        <div class="section">
+            <h2>По дням</h2>
+            <div class="section-body">
+                <table class="warpoints" id="wp-daily">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Получено</th>
+                            <th>Отдано</th>
+                            <th>Разница</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section logs">
+            <h2>Логи</h2>
+            <div class="section-body">
+                <textarea id="war-logs" placeholder="Вставьте логи клановых войн...&#10;&#10;13.02.26 00:08 Zerr0 отдал 1 вар-поинт(а/ов) в войне против Dark Souls погибнув от руки gun seller в бою 9439078.&#10;13.02.26 00:23 Zerr0 получил 1 вар-поинт(а/ов) в войне против Dark Souls за убийство Алй-Хусейн в бою 9440242."></textarea>
+            </div>
         </div>
     </div>
 
@@ -396,6 +584,128 @@
 
         logsTextarea.addEventListener('input', applyLogs);
         calculate();
+
+        /* === Вкладки === */
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab).classList.add('active');
+            });
+        });
+
+        /* === Варпоинты === */
+        const warLogsTextarea = document.getElementById('war-logs');
+
+        function parseWarLogs(text) {
+            const players = {};
+            const daily = {};
+            const regex = /^(\d\d\.\d\d\.\d\d)\s+\d\d:\d\d\s+(.+?)\s+(получил|отдал)\s+(\d+)\s+вар-поинт/gm;
+            let m;
+            while ((m = regex.exec(text)) !== null) {
+                const date = m[1];
+                const name = m[2];
+                const type = m[3];
+                const count = parseInt(m[4], 10);
+
+                if (!players[name]) players[name] = { got: 0, gave: 0 };
+                if (!daily[date]) daily[date] = { got: 0, gave: 0 };
+
+                if (type === 'получил') {
+                    players[name].got += count;
+                    daily[date].got += count;
+                } else {
+                    players[name].gave += count;
+                    daily[date].gave += count;
+                }
+            }
+            return { players, daily };
+        }
+
+        function name_esc(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function diffClass(val) {
+            if (val > 0) return 'positive';
+            if (val < 0) return 'negative';
+            return '';
+        }
+
+        function diffText(val) {
+            if (val > 0) return '+' + val;
+            return String(val);
+        }
+
+        function renderWarStats() {
+            const text = warLogsTextarea.value.trim();
+            const { players, daily } = text ? parseWarLogs(text) : { players: {}, daily: {} };
+
+            // Таблица игроков
+            const pBody = document.querySelector('#wp-players tbody');
+            pBody.innerHTML = '';
+            const sorted = Object.entries(players)
+                .map(([name, s]) => ({ name, got: s.got, gave: s.gave, diff: s.got - s.gave }))
+                .sort((a, b) => b.diff - a.diff);
+            sorted.forEach((s, i) => {
+                const tr = document.createElement('tr');
+                const place = i < 3 ? i + 1 : 0;
+                if (place) tr.className = 'place-' + place;
+                const badge = place ? '<span class="place-badge">' + place + '</span>' : '';
+                tr.innerHTML =
+                    '<td><div class="nick-cell">' + badge + name_esc(s.name) + '</div></td>' +
+                    '<td>' + s.got + '</td>' +
+                    '<td>' + s.gave + '</td>' +
+                    '<td class="' + diffClass(s.diff) + '">' + diffText(s.diff) + '</td>';
+                pBody.appendChild(tr);
+            });
+
+            // Таблица по дням
+            const dBody = document.querySelector('#wp-daily tbody');
+            dBody.innerHTML = '';
+            const dates = Object.keys(daily).sort();
+            let totalGot = 0, totalGave = 0;
+            dates.forEach(date => {
+                const s = daily[date];
+                const diff = s.got - s.gave;
+                totalGot += s.got;
+                totalGave += s.gave;
+                const tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td>' + date + '</td>' +
+                    '<td>' + s.got + '</td>' +
+                    '<td>' + s.gave + '</td>' +
+                    '<td class="' + diffClass(diff) + '">' + diffText(diff) + '</td>';
+                dBody.appendChild(tr);
+            });
+
+            if (dates.length > 0) {
+                const totalDiff = totalGot - totalGave;
+                const tr = document.createElement('tr');
+                tr.className = 'grand-total';
+                tr.innerHTML =
+                    '<td>Итого</td>' +
+                    '<td>' + totalGot + '</td>' +
+                    '<td>' + totalGave + '</td>' +
+                    '<td class="' + diffClass(totalDiff) + '">' + diffText(totalDiff) + '</td>';
+                dBody.appendChild(tr);
+            }
+        }
+
+        warLogsTextarea.addEventListener('input', renderWarStats);
+
+        document.getElementById('wp-players').addEventListener('click', e => {
+            const td = e.target.closest('#wp-players td:first-child');
+            if (!td) return;
+            const nickEl = td.querySelector('.nick-cell');
+            if (!nickEl) return;
+            const badge = nickEl.querySelector('.place-badge');
+            const name = badge ? nickEl.textContent.slice(badge.textContent.length) : nickEl.textContent;
+            navigator.clipboard.writeText(name.trim());
+            td.style.color = '#a0d468';
+            setTimeout(() => { td.style.color = ''; }, 600);
+        });
     </script>
 </body>
 </html>
