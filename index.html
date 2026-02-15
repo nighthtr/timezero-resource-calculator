@@ -447,6 +447,95 @@
             height: 20%;
         }
 
+        /* --- ПвП --- */
+        #tab-pvp { overflow: hidden; }
+
+        #tab-pvp > .section {
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        #tab-pvp > .section:nth-child(2),
+        #tab-pvp > .section:nth-child(3) {
+            flex: 1;
+            min-height: 60px;
+        }
+
+        #tab-pvp > .section:nth-child(2) > .section-body,
+        #tab-pvp > .section:nth-child(3) > .section-body {
+            flex: 1;
+            overflow-y: auto;
+            min-height: 0;
+        }
+
+        #tab-pvp > .section:nth-child(4) {
+            height: 20%;
+        }
+
+        .pvp-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 10px 14px;
+        }
+
+        .pvp-stats-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pvp-card {
+            flex: 1;
+            background: rgba(20, 18, 12, 0.8);
+            border: 1px solid #3a3425;
+            padding: 10px 14px;
+            text-align: center;
+        }
+
+        .pvp-card-label {
+            font-size: 0.6em;
+            color: #6a5e42;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .pvp-card-value {
+            font-size: 1.3em;
+            color: #e8c35a;
+            text-shadow: 0 0 10px rgba(232, 195, 90, 0.2);
+        }
+
+        #pvp-opponents thead th {
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        #pvp-opponents thead th:hover { color: #d4c9a8; }
+
+        #pvp-opponents thead th.sort-desc::after { content: ' \25BC'; }
+        #pvp-opponents thead th.sort-asc::after  { content: ' \25B2'; }
+
+        #pvp-opponents thead th.sort-desc,
+        #pvp-opponents thead th.sort-asc { color: #e8c35a; }
+
+        #pvp-opponents td:first-child {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #pvp-opponents td:first-child:hover { color: #e8c35a; }
+
+        #pvp-daily td:first-child {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #pvp-daily td:first-child:hover { color: #e8c35a; }
+
         /* scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #1c1a15; }
@@ -460,6 +549,7 @@
     <div class="tab-nav">
         <button class="tab-btn active" data-tab="tab-resources">Ресурсы</button>
         <button class="tab-btn" data-tab="tab-experience">Опыт</button>
+	<button class="tab-btn" data-tab="tab-pvp">ПвП</button>
 	<button class="tab-btn" data-tab="tab-warpoints">Варпоинты</button>
     </div>
 
@@ -578,6 +668,87 @@
             <h2>Логи</h2>
             <div class="section-body">
                 <textarea id="exp-logs" placeholder="Вставьте логи боёв...&#10;&#10;12.02.26 02:08 Вы победили в бою 9359141. Получено опыта: 4812&#10;12.02.26 02:08 Подобрал: Organic [2], Venom [2], ..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-content" id="tab-pvp">
+        <div class="section">
+            <h2>Статистика</h2>
+            <div class="pvp-stats">
+                <div class="pvp-stats-row">
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Победы</div>
+                        <div class="pvp-card-value" id="pvp-wins">0</div>
+                    </div>
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Поражения</div>
+                        <div class="pvp-card-value" id="pvp-losses">0</div>
+                    </div>
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Winrate</div>
+                        <div class="pvp-card-value" id="pvp-winrate">0%</div>
+                    </div>
+                </div>
+                <div class="pvp-stats-row">
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Ранг-поинты</div>
+                        <div class="pvp-card-value" id="pvp-rp">0</div>
+                    </div>
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Бонусные РП</div>
+                        <div class="pvp-card-value" id="pvp-bonus-rp">0</div>
+                    </div>
+                    <div class="pvp-card">
+                        <div class="pvp-card-label">Офицерские РП</div>
+                        <div class="pvp-card-value" id="pvp-officer-rp">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Противники</h2>
+            <div class="section-body">
+                <table class="warpoints" id="pvp-opponents">
+                    <thead>
+                        <tr>
+                            <th>Ник</th>
+                            <th>Убийства</th>
+                            <th>Смерти</th>
+                            <th>Winrate</th>
+                            <th>Офиц. РП</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>По дням</h2>
+            <div class="section-body">
+                <table class="warpoints" id="pvp-daily">
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Победы</th>
+                            <th>Поражения</th>
+                            <th>Winrate</th>
+                            <th>Офиц. РП</th>
+                            <th>Бонус. ОРП</th>
+                            <th>Всего ОРП</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="section logs">
+            <h2>Логи</h2>
+            <div class="section-body">
+                <textarea id="pvp-logs" placeholder="Вставьте PvP логи...&#10;&#10;13.02.26 01:09 Получено 90 ранг-поинтов за убийство персонажа Trinity в бою 9442453.&#10;13.02.26 00:26 Вас убил 'Trinity'."></textarea>
             </div>
         </div>
     </div>
@@ -939,6 +1110,215 @@
             const badge = nickEl.querySelector('.place-badge');
             const name = badge ? nickEl.textContent.slice(badge.textContent.length) : nickEl.textContent;
             navigator.clipboard.writeText(name.trim());
+            td.style.color = '#a0d468';
+            setTimeout(() => { td.style.color = ''; }, 600);
+        });
+
+        /* === ПвП === */
+        const pvpLogsTextarea = document.getElementById('pvp-logs');
+
+        function parsePvpLogs(text) {
+            const opponents = {};
+            const daily = {};
+            let totalWins = 0, totalLosses = 0, totalRp = 0, totalBonusRp = 0, totalOfficerRp = 0;
+
+            const killRegex = /^(\d\d\.\d\d\.\d\d)\s+\d\d:\d\d\s+Получено (\d+) ранг-поинтов за убийство персонажа (.+?) в бою \d+/;
+            const deathRegex = /^(\d\d\.\d\d\.\d\d)\s+\d\d:\d\d\s+Вас убил '(.+?)'/;
+            const bonusRegex = /^(\d\d\.\d\d\.\d\d)\s+\d\d:\d\d\s+Получено (\d+) бонусных ранг-поинтов/;
+            const officerRegex = /^(\d\d\.\d\d\.\d\d)\s+\d\d:\d\d\s+Получено ([\d.]+) офицерских ранг-поинтов/;
+
+            const lines = text.split('\n');
+            lines.forEach(line => {
+                let m;
+                if ((m = killRegex.exec(line))) {
+                    const date = m[1], rp = parseInt(m[2], 10), victim = m[3];
+                    totalWins++;
+                    totalRp += rp;
+                    if (!opponents[victim]) opponents[victim] = { kills: 0, deaths: 0, rp: 0 };
+                    opponents[victim].kills++;
+                    opponents[victim].rp += rp;
+                    if (!daily[date]) daily[date] = { wins: 0, losses: 0, rp: 0, bonusRp: 0, officerRp: 0 };
+                    daily[date].wins++;
+                    daily[date].rp += rp;
+                    return;
+                }
+                if ((m = deathRegex.exec(line))) {
+                    const date = m[1], killer = m[2];
+                    totalLosses++;
+                    if (!opponents[killer]) opponents[killer] = { kills: 0, deaths: 0, rp: 0 };
+                    opponents[killer].deaths++;
+                    if (!daily[date]) daily[date] = { wins: 0, losses: 0, rp: 0, bonusRp: 0, officerRp: 0 };
+                    daily[date].losses++;
+                    return;
+                }
+                if ((m = bonusRegex.exec(line))) {
+                    const date = m[1], brp = parseInt(m[2], 10);
+                    totalBonusRp += brp;
+                    if (!daily[date]) daily[date] = { wins: 0, losses: 0, rp: 0, bonusRp: 0, officerRp: 0 };
+                    daily[date].bonusRp += brp;
+                    return;
+                }
+                if ((m = officerRegex.exec(line))) {
+                    const date = m[1], orp = parseFloat(m[2]);
+                    totalOfficerRp += orp;
+                    if (!daily[date]) daily[date] = { wins: 0, losses: 0, rp: 0, bonusRp: 0, officerRp: 0 };
+                    daily[date].officerRp += orp;
+                }
+            });
+
+            const total = totalWins + totalLosses;
+            const winrate = total > 0 ? Math.round(totalWins / total * 100) : 0;
+            const calculatedOfficerRp = (totalRp + totalBonusRp) / 100;
+            const finalOfficerRp = calculatedOfficerRp + totalOfficerRp;
+
+            return { opponents, daily, totalWins, totalLosses, winrate, totalRp, totalBonusRp, totalOfficerRp: finalOfficerRp };
+        }
+
+        const pvpSort = { col: 'rp', dir: 'desc' };
+        const pvpColKeys = ['name', 'kills', 'deaths', 'winrate', 'rp'];
+
+        function updatePvpSortHeaders() {
+            document.querySelectorAll('#pvp-opponents thead th').forEach(th => {
+                th.classList.remove('sort-asc', 'sort-desc');
+            });
+            if (pvpSort.col !== null && pvpSort.dir) {
+                const idx = pvpColKeys.indexOf(pvpSort.col);
+                const ths = document.querySelectorAll('#pvp-opponents thead th');
+                if (ths[idx]) ths[idx].classList.add('sort-' + pvpSort.dir);
+            }
+        }
+
+        document.querySelector('#pvp-opponents thead').addEventListener('click', e => {
+            const th = e.target.closest('#pvp-opponents thead th');
+            if (!th) return;
+            const idx = Array.from(th.parentElement.children).indexOf(th);
+            const col = pvpColKeys[idx];
+            if (!col) return;
+
+            if (pvpSort.col !== col) {
+                pvpSort.col = col;
+                pvpSort.dir = 'desc';
+            } else if (pvpSort.dir === 'desc') {
+                pvpSort.dir = 'asc';
+            } else {
+                pvpSort.col = null;
+                pvpSort.dir = null;
+            }
+            renderPvpStats();
+        });
+
+        function renderPvpStats() {
+            const text = pvpLogsTextarea.value.trim();
+            const data = text ? parsePvpLogs(text) : { opponents: {}, daily: {}, totalWins: 0, totalLosses: 0, winrate: 0, totalRp: 0, totalBonusRp: 0, totalOfficerRp: 0 };
+
+            document.getElementById('pvp-wins').textContent = data.totalWins;
+            document.getElementById('pvp-losses').textContent = data.totalLosses;
+            document.getElementById('pvp-winrate').textContent = data.winrate + '%';
+            document.getElementById('pvp-rp').textContent = data.totalRp.toLocaleString();
+            document.getElementById('pvp-bonus-rp').textContent = data.totalBonusRp.toLocaleString();
+            document.getElementById('pvp-officer-rp').textContent = data.totalOfficerRp % 1 === 0 ? data.totalOfficerRp.toLocaleString() : data.totalOfficerRp.toFixed(1);
+
+            // Таблица противников
+            const oBody = document.querySelector('#pvp-opponents tbody');
+            oBody.innerHTML = '';
+            const rows = Object.entries(data.opponents)
+                .map(([name, s]) => {
+                    const t = s.kills + s.deaths;
+                    return { name, kills: s.kills, deaths: s.deaths, winrate: t > 0 ? Math.round(s.kills / t * 100) : 0, rp: s.rp };
+                });
+
+            const sorted = rows.slice();
+            if (pvpSort.col && pvpSort.dir) {
+                const col = pvpSort.col;
+                const mult = pvpSort.dir === 'asc' ? 1 : -1;
+                sorted.sort((a, b) => {
+                    if (col === 'name') return mult * a.name.localeCompare(b.name, 'ru');
+                    return mult * (a[col] - b[col]);
+                });
+            } else {
+                sorted.sort((a, b) => b.rp - a.rp);
+            }
+
+            sorted.forEach(s => {
+                const tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td>' + name_esc(s.name) + '</td>' +
+                    '<td>' + s.kills + '</td>' +
+                    '<td>' + s.deaths + '</td>' +
+                    '<td>' + s.winrate + '%</td>' +
+                    '<td>' + (s.rp / 100).toFixed(1) + '</td>';
+                oBody.appendChild(tr);
+            });
+
+            updatePvpSortHeaders();
+
+            // Таблица по дням
+            const dBody = document.querySelector('#pvp-daily tbody');
+            dBody.innerHTML = '';
+            const dates = Object.keys(data.daily).sort();
+            let sumWins = 0, sumLosses = 0, sumRp = 0, sumBonusRp = 0, sumOfficerRp = 0;
+
+            dates.forEach(date => {
+                const s = data.daily[date];
+                sumWins += s.wins;
+                sumLosses += s.losses;
+                sumRp += s.rp;
+                sumBonusRp += s.bonusRp;
+                sumOfficerRp += s.officerRp;
+                const tr = document.createElement('tr');
+                var dayTotal = s.wins + s.losses;
+                var dayWr = dayTotal > 0 ? Math.round(s.wins / dayTotal * 100) : 0;
+                var dayAllOrp = s.rp / 100 + s.bonusRp / 100 + s.officerRp;
+                tr.innerHTML =
+                    '<td>' + date + '</td>' +
+                    '<td>' + s.wins + '</td>' +
+                    '<td>' + s.losses + '</td>' +
+                    '<td>' + dayWr + '%</td>' +
+                    '<td>' + (s.rp / 100).toFixed(1) + '</td>' +
+                    '<td>' + (s.bonusRp / 100).toFixed(1) + '</td>' +
+                    '<td>' + dayAllOrp.toFixed(1) + '</td>';
+                dBody.appendChild(tr);
+            });
+
+            if (dates.length > 0) {
+                const tr = document.createElement('tr');
+                tr.className = 'grand-total';
+                var totalAll = sumWins + sumLosses;
+                var totalWr = totalAll > 0 ? Math.round(sumWins / totalAll * 100) : 0;
+                var totalAllOrp = sumRp / 100 + sumBonusRp / 100 + sumOfficerRp;
+                tr.innerHTML =
+                    '<td>Итого</td>' +
+                    '<td>' + sumWins + '</td>' +
+                    '<td>' + sumLosses + '</td>' +
+                    '<td>' + totalWr + '%</td>' +
+                    '<td>' + (sumRp / 100).toFixed(1) + '</td>' +
+                    '<td>' + (sumBonusRp / 100).toFixed(1) + '</td>' +
+                    '<td>' + totalAllOrp.toFixed(1) + '</td>';
+                dBody.appendChild(tr);
+            }
+        }
+
+        pvpLogsTextarea.addEventListener('input', renderPvpStats);
+        updatePvpSortHeaders();
+
+        document.getElementById('pvp-opponents').addEventListener('click', e => {
+            const td = e.target.closest('#pvp-opponents td:first-child');
+            if (!td) return;
+            const tr = td.parentElement;
+            const cells = tr.querySelectorAll('td');
+            const line = cells[0].textContent.trim() + ' | побед: ' + cells[1].textContent + ' поражений: ' + cells[2].textContent + ' | винрейт: ' + cells[3].textContent + ' | ' + cells[4].textContent + ' рангов';
+            navigator.clipboard.writeText(line);
+            td.style.color = '#a0d468';
+            setTimeout(() => { td.style.color = ''; }, 600);
+        });
+
+        document.getElementById('pvp-daily').addEventListener('click', e => {
+            const td = e.target.closest('#pvp-daily td:first-child');
+            if (!td) return;
+            const tr = td.parentElement;
+            const cells = tr.querySelectorAll('td');
+            const line = cells[0].textContent + ' | побед: ' + cells[1].textContent + ' поражений: ' + cells[2].textContent + ' | винрейт: ' + cells[3].textContent + ' | ' + cells[6].textContent + ' рангов';
+            navigator.clipboard.writeText(line);
             td.style.color = '#a0d468';
             setTimeout(() => { td.style.color = ''; }, 600);
         });
