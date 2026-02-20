@@ -639,6 +639,10 @@
                     <div class="exp-card-value" id="exp-battles">0</div>
                 </div>
                 <div class="exp-card">
+                    <div class="exp-card-label">ПВЕ-ранги</div>
+                    <div class="exp-card-value" id="exp-pve-ranks">0</div>
+                </div>
+                <div class="exp-card">
                     <div class="exp-card-label">Общий опыт</div>
                     <div class="exp-card-value" id="exp-total">0</div>
                 </div>
@@ -1074,17 +1078,25 @@
                 }
             });
 
+            const pveRankBonusRegex = /Получено (\d+) бонусных ПВЕ-ранг-поинтов/g;
+            let totalPveRankBonus = 0;
+            while ((m = pveRankBonusRegex.exec(text)) !== null) {
+                totalPveRankBonus += parseInt(m[1], 10);
+            }
+            const pveRanks = totalPveRankBonus * 2;
+
             const avgXP = battles > 0 ? Math.round(totalXP / battles) : 0;
-            return { battles, totalXP, avgXP, items };
+            return { battles, totalXP, avgXP, items, pveRanks };
         }
 
         function renderExpStats() {
             const text = expLogsTextarea.value.trim();
-            const { battles, totalXP, avgXP, items } = text ? parseExpLogs(text) : { battles: 0, totalXP: 0, avgXP: 0, items: {} };
+            const { battles, totalXP, avgXP, items, pveRanks } = text ? parseExpLogs(text) : { battles: 0, totalXP: 0, avgXP: 0, items: {}, pveRanks: 0 };
 
             document.getElementById('exp-battles').textContent = battles.toLocaleString();
             document.getElementById('exp-total').textContent = totalXP.toLocaleString();
             document.getElementById('exp-avg').textContent = avgXP.toLocaleString();
+            document.getElementById('exp-pve-ranks').textContent = pveRanks.toLocaleString();
 
             const tbody = document.querySelector('#exp-items tbody');
             tbody.innerHTML = '';
